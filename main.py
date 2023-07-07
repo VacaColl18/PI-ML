@@ -7,7 +7,7 @@ app = FastAPI()
 
 @app.get('/')
 def index():
-    return {'Saludo': "PI-ML de Maximiliano Vaca Coll"}
+    return {'Saludo': "PI-ML SH de Maximiliano Vaca Coll"}
 
 @app.get('/peliculas_idioma/{idioma}')
 def peliculas_idioma(idioma: str):
