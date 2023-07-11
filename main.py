@@ -12,12 +12,13 @@ def index():
 @app.get('/peliculas_idioma/{idioma}')
 def peliculas_idioma(idioma: str):
     conteo = int((df["original_language"] == str(idioma)).sum())
+    idioma = idioma.upper()
     return {'idioma': idioma, 'cantidad': conteo}
 
 @app.get('/peliculas_duracion/{pelicula}')
-def peliculas_duracion(pelicula:str):
-    pelicula = pelicula.upper()
-    pelicula_info = df[df['title'].str.upper() == pelicula]
+def peliculas_duracion(pelicula: str):
+    pelicula = pelicula.lower()
+    pelicula_info = df[df['title'].str.lower() == pelicula]
     if not pelicula_info.empty:
         release_year = int(pelicula_info['release_year'].iloc[0])
         runtime = int(pelicula_info['runtime'].iloc[0])
@@ -25,36 +26,39 @@ def peliculas_duracion(pelicula:str):
         release_year = 'No se encontro la pelicula'
         runtime = 'No se encontro la pelicula'
         pelicula = 'No se encontro la pelicula'
+        pelicula = pelicula.title()
     return {'pelicula':pelicula, 'duracion':runtime, 'anio':release_year}
+
 
 @app.get('/franquicia/{franquicia}')
 def franquicia(franquicia: str):
     production_company = franquicia.upper()
-    # Consulta 1: Cantidad de títulos por franquicia
+    # Cantidad de títulos por franquicia
     titulos = df[df['belongs_to_collection'].str.upper() == production_company]['title'].to_dict()
     cantidad = len(titulos)
-    # Consulta 2: ganancia total de la franquicia
+    # ganancia total de la franquicia
     gananciatotal = pd.to_numeric(df[df['belongs_to_collection'].str.upper() == production_company]['budget'], errors='coerce') * pd.to_numeric(df[df['belongs_to_collection'].str.upper() == production_company]['return'], errors='coerce')
     gananciatotal = gananciatotal.sum()
-    # Consulta 3: Promedio de la ganancia total de la franquicia por pelicula
+    # Promedio de la ganancia total de la franquicia por pelicula
     promedio = pd.to_numeric(df[df['belongs_to_collection'].str.upper() == production_company]['budget'], errors='coerce') * pd.to_numeric(df[df['belongs_to_collection'].str.upper() == production_company]['return'], errors='coerce')
     promedio = promedio.mean()
+    franquicia = franquicia.title()
     return {'franquicia': franquicia, 'cantidad': cantidad, 'titulos': titulos, 'ganancia_total': gananciatotal, 'ganancia_promedio': promedio}
 
 
 @app.get('/peliculas_pais/{pais}')
 def peliculas_pais(pais: str):
-    #pais = pais.upper()
     df['production_countries'] = df['production_countries'].apply(lambda x: [] if pd.isnull(x) else x)
     cantidad = int(df[df['production_countries'].apply(lambda x: pais in x if x is not None else False)]['title'].count())
+    pais = pais.title()
     return {'pais': pais, 'cantidad': cantidad}
 
 
 @app.get('/productoras_exitosas/{productora}')
 def productoras_exitosas(productora:str):
-    # Consulta 1: Cantidad de títulos por compañía de producción
+    # Cantidad de títulos por compañía de producción
     titulos = int(df[df['production_companies'].str.contains(productora, na=False)]['title'].count())
-    # Consulta 2: Suma de revenue por compañía de producción
+    # Suma de revenue por compañía de producción
     revenue_total = int(df[df['production_companies'].str.contains(productora, na=False)]['revenue'].sum())
     return {'productora': productora, 'revenue_total': revenue_total, 'cantidad': titulos}
 
@@ -64,8 +68,8 @@ def productoras_exitosas(productora:str):
 @app.get('/get_director/{nombre_director}')
 def get_director(nombre_director: str):
     df_filtrado = df[df['director_name'] == nombre_director]
-    promedio_return = df_filtrado['return'].mean()
     df_indexado = df_filtrado.set_index('title')
+    promedio_return = df_filtrado['return'].mean()
     lista_peliculas = df_filtrado['title'].tolist()
     dict_anios = dict(zip(df_indexado.index, df_indexado['release_year'].tolist()))
     dict_return = dict(zip(df_indexado.index, df_indexado['return'].tolist()))
