@@ -9,7 +9,10 @@ app = FastAPI()
 
 @app.get('/')
 def index():
-    return {'Saludo': "PI-ML SH de Maximiliano Vaca Coll"}
+    return {'Alumno': "Maximiliano Vaca Coll"
+            'Proyecto': "API de peliculas"
+            'Curso': "Data Science - Soy Henry"
+            'Github': https://github.com/VacaColl18/PI-ML}
 
 @app.get('/peliculas_idioma/{idioma}')
 def peliculas_idioma(idioma: str):
@@ -83,7 +86,7 @@ def get_director(nombre_director: str):
 
     # ML
 @app.get('/recomendacion/{titulo}')
-def get_recomendacion(titulo: str):
+def recomendacion(titulo: str):
     reference_index = df_modelo[df_modelo['title'] == titulo].index[0]
 
     # Obtener el vector de características del título de referencia
