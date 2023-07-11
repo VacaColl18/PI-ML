@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 df = pd.read_csv('dataset_api.csv')
-df_modelo = pd.read_csv('dataset_modelo.csv')
+df_modelo = pd.read_csv('dataset_modelo10k.csv')
 
 app = FastAPI()
 
