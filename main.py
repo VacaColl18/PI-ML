@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 
 df = pd.read_csv('dataset_api.csv')
+df_modelo = pd.read_csv('dataset_modelo.csv')
 
 app = FastAPI()
 
@@ -80,9 +82,20 @@ def get_director(nombre_director: str):
     'budget_pelicula':dict_budget, 'revenue_pelicula':dict_revenue}
 
     # ML
-"""@app.get('/recomendacion/{titulo}')
-def recomendacion(titulo:str):
-    '''Ingresas un nombre de pelicula y te recomienda las similares en una lista'''
-    return {'lista recomendada': respuesta}"""
+@app.get('/recomendacion/{titulo}')
+def get_recomendacion(titulo: str):
+    reference_index = df_modelo[df_modelo['title'] == titulo].index[0]
 
+    # Obtener el vector de características del título de referencia
+    reference_vector = df_modelo.iloc[reference_index, 3:]  # Columnas de género
 
+    # Calcular la similitud del coseno entre el vector de referencia y todos los demás vectores
+    similarity_scores = cosine_similarity([reference_vector], df_modelo.iloc[:, 3:])
+
+    # Obtener los índices de las 5 películas más similares
+    top_indices = similarity_scores.argsort()[0][-6:-1]  # Excluimos el índice de referencia
+
+    # Obtener los títulos de las películas recomendadas
+    recommended_titles = df_modelo.iloc[top_indices]['title']
+
+    return {'lista recomendada': recommended_titles}
