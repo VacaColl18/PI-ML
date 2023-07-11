@@ -9,10 +9,10 @@ app = FastAPI()
 
 @app.get('/')
 def index():
-    return {'Alumno': "Maximiliano Vaca Coll"
-            'Proyecto': "API de peliculas"
-            'Curso': "Data Science - Soy Henry"
-            'Github': https://github.com/VacaColl18/PI-ML}
+    return {'Alumno': "Maximiliano Vaca Coll",
+            'Proyecto': "API de peliculas",
+            'Curso': "Data Science - Soy Henry",
+            'Github': 'https://github.com/VacaColl18/PI-ML'}
 
 @app.get('/peliculas_idioma/{idioma}')
 def peliculas_idioma(idioma: str):
